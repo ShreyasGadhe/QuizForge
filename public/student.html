@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="style.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-blue-600">Student Dashboard</span>
+                </div>
+                <div class="flex items-center">
+                    <span id="welcome-user" class="text-gray-700 mr-4"></span>
+                    <button id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto p-4 md:p-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Available Quizzes -->
+            <div class="lg:col-span-2 bg-white p-8 rounded-2xl shadow-xl">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Available Quizzes</h2>
+                <div id="quiz-list" class="space-y-4">
+                    <!-- Quizzes will be loaded here -->
+                    <p id="no-quizzes" class="text-gray-500">No quizzes available at the moment.</p>
+                </div>
+            </div>
+            
+            <!-- My Scores -->
+            <div class="lg:col-span-1 bg-white p-8 rounded-2xl shadow-xl">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">My Scores</h2>
+                <div id="score-list" class="space-y-4">
+                    <!-- Scores will be loaded here -->
+                    <p id="no-scores" class="text-gray-500">You haven't completed any quizzes yet.</p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="student.js"></script>
+</body>
+</html>

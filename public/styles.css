@@ -1,0 +1,55 @@
+/* This is a basic set of modern styles.
+  For a true "modern" look, Tailwind CSS is loaded via CDN in the HTML files.
+  These are just fallbacks and base styles.
+*/
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 2rem;
+}
+
+/* Custom styles for the message box */
+#message-box {
+    position: fixed;
+    top: -100px; /* Start off-screen */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    z-index: 1000;
+    transition: top 0.5s ease-in-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#message-box.show {
+    top: 20px; /* Slide in */
+}
+
+#message-box.success {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+#message-box.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* Helper function for all pages */
+.hidden {
+    display: none;
+}
