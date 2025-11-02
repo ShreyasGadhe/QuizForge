@@ -32,10 +32,26 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/login.html';
     });
 
+    // --- Search functionality ---
+    const searchInput = document.getElementById('search-input');
+    let searchTimeout;
+
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            loadQuizzes(e.target.value);
+        }, 300); // Debounce search by 300ms
+    });
+
     // --- Fetch and Display Quizzes ---
-    async function loadQuizzes() {
+    async function loadQuizzes(searchTerm = '') {
         try {
-            const response = await fetch('/api/quizzes', {
+            let url = '/api/quizzes';
+            if (searchTerm) {
+                url += `?search=${encodeURIComponent(searchTerm)}`;
+            }
+
+            const response = await fetch(url, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Failed to fetch quizzes.');
@@ -46,6 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (quizzes.length === 0) {
                 noQuizzes.classList.remove('hidden');
+                noQuizzes.textContent = searchTerm 
+                    ? `No quizzes found for "${searchTerm}"` 
+                    : 'No quizzes available at the moment.';
+                // Clear existing quizzes
+                const existingQuizzes = quizList.querySelectorAll('.quiz-card');
+                existingQuizzes.forEach(q => q.remove());
                 return;
             }
 
@@ -54,15 +76,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             quizzes.forEach(quiz => {
                 const quizElement = document.createElement('div');
-                quizElement.className = 'flex items-center justify-between p-4 bg-dark-tertiary border border-gray-700 rounded-lg hover:border-emerald transition-all duration-300 hover:shadow-lg hover:shadow-emerald/10';
+                quizElement.className = 'quiz-card flex items-center justify-between p-4 bg-dark-tertiary border border-gray-700 rounded-lg hover:border-emerald transition-all duration-300 hover:shadow-lg hover:shadow-emerald/10';
+                
+                const date = new Date(quiz.created_at).toLocaleDateString();
+                
                 quizElement.innerHTML = `
-                    <div class="flex items-center">
+                    <div class="flex items-center flex-1">
                         <div class="w-10 h-10 bg-gradient-to-br from-emerald/20 to-emerald-dark/20 rounded-lg flex items-center justify-center mr-3 border border-emerald/30">
                             <svg class="w-5 h-5 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                         </div>
-                        <span class="font-medium text-gray-200">${quiz.title}</span>
+                        <div>
+                            <span class="font-medium text-gray-200 block">${quiz.title}</span>
+                            <span class="text-xs text-gray-500">${date}</span>
+                        </div>
                     </div>
                     <button data-id="${quiz.id}" 
                             class="take-quiz-btn bg-gradient-to-r from-emerald to-emerald-dark text-white px-5 py-2 rounded-lg text-sm font-medium hover:shadow-lg hover:shadow-emerald/50 transition-all duration-300 hover:-translate-y-0.5 flex items-center">

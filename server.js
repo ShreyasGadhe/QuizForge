@@ -12,15 +12,14 @@ const port = process.env.PORT || 3000;
 // --- MIDDLEWARE ---
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serve frontend files from 'public' directory
+app.use(express.static('public'));
 
-// --- REDIRECT ROOT to LOGIN ---
+// --- REDIRECT ROOT to HOME PAGE ---
 app.get('/', (req, res) => {
-    res.redirect('/login.html');
+    res.redirect('/index.html');
 });
 
 // --- DATABASE CONNECTION ---
-// Use process.env.DATABASE_URL from your NeonDB project
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -37,7 +36,7 @@ async function initializeDatabase() {
     const client = await pool.connect();
     try {
         console.log("Connecting to database...");
-        // Users Table (stores students and admins)
+        
         await client.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -47,27 +46,25 @@ async function initializeDatabase() {
             );
         `);
 
-        // Quizzes Table
         await client.query(`
             CREATE TABLE IF NOT EXISTS quizzes (
                 id SERIAL PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
-                created_by INT REFERENCES users(id)
+                created_by INT REFERENCES users(id),
+                created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
             );
         `);
 
-        // Questions Table
         await client.query(`
             CREATE TABLE IF NOT EXISTS questions (
                 id SERIAL PRIMARY KEY,
                 quiz_id INT REFERENCES quizzes(id) ON DELETE CASCADE,
                 question_text TEXT NOT NULL,
-                options JSONB NOT NULL, -- e.g., [{"text": "Option A"}, {"text": "Option B"}]
-                correct_option INT NOT NULL -- index of the correct option
+                options JSONB NOT NULL,
+                correct_option INT NOT NULL
             );
         `);
 
-        // Scores Table
         await client.query(`
             CREATE TABLE IF NOT EXISTS scores (
                 id SERIAL PRIMARY KEY,
@@ -81,10 +78,8 @@ async function initializeDatabase() {
         
         console.log("Database tables checked/created.");
 
-        // --- Create default users if they don't exist ---
         const salt = await bcrypt.genSalt(10);
         
-        // Default Admin
         const adminCheck = await client.query("SELECT * FROM users WHERE username = 'admin'");
         if (adminCheck.rowCount === 0) {
             const adminHash = await bcrypt.hash('admin123', salt);
@@ -92,7 +87,6 @@ async function initializeDatabase() {
             console.log("Default admin user created. (admin/admin123)");
         }
         
-        // Default Student
         const studentCheck = await client.query("SELECT * FROM users WHERE username = 'student'");
         if (studentCheck.rowCount === 0) {
             const studentHash = await bcrypt.hash('student123', salt);
@@ -113,18 +107,15 @@ const fetchWithBackoff = async (url, options, retries = 5, delay = 1000) => {
         try {
             const response = await fetch(url, options);
             if (response.status === 429 || response.status >= 500) {
-                // Throttled or server error, wait and retry
                 throw new Error(`APIError status:${response.status}`);
             }
             if (!response.ok) {
-                 // Other client-side error
                 const errorData = await response.json();
                 throw new Error(errorData.error?.message || `APIError status:${response.status}`);
             }
-            return await response.json(); // Success
+            return await response.json();
         } catch (error) {
-            if (i === retries - 1) throw error; // Last retry failed
-            // Do not log retries to console
+            if (i === retries - 1) throw error;
             await new Promise(res => setTimeout(res, delay * Math.pow(2, i)));
         }
     }
@@ -133,12 +124,12 @@ const fetchWithBackoff = async (url, options, retries = 5, delay = 1000) => {
 // --- AUTH MIDDLEWARE ---
 function verifyToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    const token = authHeader && authHeader.split(' ')[1];
 
-    if (token == null) return res.sendStatus(401); // No token
+    if (token == null) return res.sendStatus(401);
 
     jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403); // Invalid token
+        if (err) return res.sendStatus(403);
         req.user = user;
         next();
     });
@@ -170,11 +161,9 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// --- NEW REGISTRATION ROUTE ---
 app.post('/api/register', async (req, res) => {
     const { username, password, role } = req.body;
 
-    // Basic validation
     if (!username || !password || !role) {
         return res.status(400).json({ message: "All fields are required." });
     }
@@ -183,17 +172,14 @@ app.post('/api/register', async (req, res) => {
     }
 
     try {
-        // Check if user already exists
         const userCheck = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
         if (userCheck.rowCount > 0) {
             return res.status(409).json({ message: "Username already exists." });
         }
 
-        // Hash password
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
 
-        // Insert new user
         const newUser = await pool.query(
             "INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3) RETURNING id, username, role",
             [username, passwordHash, role]
@@ -210,8 +196,9 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-
 // --- ADMIN ROUTES ---
+
+// Create quiz with AI
 app.post('/api/quizzes', verifyToken, async (req, res) => {
     if (req.user.role !== 'admin') {
         return res.status(403).json({ message: "Access forbidden: Admins only." });
@@ -225,7 +212,6 @@ app.post('/api/quizzes', verifyToken, async (req, res) => {
     const client = await pool.connect();
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${GEMINI_API_KEY}`;
     
-    // --- Define the JSON schema we want Gemini to return ---
     const quizSchema = {
         type: "ARRAY",
         items: {
@@ -251,7 +237,6 @@ app.post('/api/quizzes', verifyToken, async (req, res) => {
         }
     };
     
-    // --- Construct the payload for the Gemini API ---
     const payload = {
         contents: [{ 
             parts: [{ 
@@ -271,7 +256,6 @@ app.post('/api/quizzes', verifyToken, async (req, res) => {
     };
 
     try {
-        // --- Call Gemini API to generate questions ---
         const apiResponse = await fetchWithBackoff(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -291,22 +275,18 @@ app.post('/api/quizzes', verifyToken, async (req, res) => {
             throw new Error("AI did not return any questions.");
         }
         
-        // --- Save to Database ---
         await client.query('BEGIN');
 
-        // 1. Create the quiz
         const quizResult = await client.query(
             "INSERT INTO quizzes (title, created_by) VALUES ($1, $2) RETURNING id",
             [title, req.user.id]
         );
         const quizId = quizResult.rows[0].id;
 
-        // 2. Insert questions from AI response
         for (const q of questions) {
-            // Validate question structure
             if (!q.question_text || !Array.isArray(q.options) || q.options.length < 2 || typeof q.correct_option !== 'number' || q.correct_option < 0 || q.correct_option >= q.options.length) {
                 console.warn("Skipping malformed question from AI:", q);
-                continue; // Skip this question
+                continue;
             }
             
             await client.query(
@@ -321,7 +301,6 @@ app.post('/api/quizzes', verifyToken, async (req, res) => {
     } catch (err) {
         await client.query('ROLLBACK');
         console.error("Quiz creation error:", err);
-        // Provide more specific error to client
         if (err.message.includes("APIError")) {
              res.status(502).json({ message: "Failed to communicate with AI service. " + err.message });
         } else if (err.message.includes("JSON.parse")) {
@@ -334,12 +313,99 @@ app.post('/api/quizzes', verifyToken, async (req, res) => {
     }
 });
 
+// NEW: Get all quizzes for admin (with question count and attempt count)
+app.get('/api/admin/quizzes', verifyToken, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Access forbidden: Admins only." });
+    }
+
+    try {
+        const result = await pool.query(`
+            SELECT 
+                q.id, 
+                q.title, 
+                q.created_at,
+                u.username as created_by,
+                COUNT(DISTINCT qs.id) as question_count,
+                COUNT(DISTINCT s.id) as attempt_count
+            FROM quizzes q
+            LEFT JOIN users u ON q.created_by = u.id
+            LEFT JOIN questions qs ON q.id = qs.quiz_id
+            LEFT JOIN scores s ON q.id = s.quiz_id
+            GROUP BY q.id, q.title, q.created_at, u.username
+            ORDER BY q.created_at DESC
+        `);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// NEW: Delete a quiz
+app.delete('/api/admin/quizzes/:id', verifyToken, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Access forbidden: Admins only." });
+    }
+
+    const { id } = req.params;
+    try {
+        const result = await pool.query("DELETE FROM quizzes WHERE id = $1 RETURNING id", [id]);
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Quiz not found" });
+        }
+        res.json({ message: "Quiz deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// NEW: Get students who attempted a specific quiz
+app.get('/api/admin/quizzes/:id/attempts', verifyToken, async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Access forbidden: Admins only." });
+    }
+
+    const { id } = req.params;
+    try {
+        const result = await pool.query(`
+            SELECT 
+                s.id,
+                u.username,
+                s.score,
+                s.total,
+                s.taken_at,
+                ROUND((s.score::numeric / s.total::numeric) * 100) as percentage
+            FROM scores s
+            JOIN users u ON s.user_id = u.id
+            WHERE s.quiz_id = $1
+            ORDER BY s.taken_at DESC
+        `, [id]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 // --- STUDENT ROUTES ---
 
-// Get all available quizzes
+// Get all available quizzes (with search support)
 app.get('/api/quizzes', verifyToken, async (req, res) => {
     try {
-        const result = await pool.query("SELECT id, title FROM quizzes");
+        const { search } = req.query;
+        let query = "SELECT id, title, created_at FROM quizzes";
+        let params = [];
+        
+        if (search) {
+            query += " WHERE LOWER(title) LIKE LOWER($1)";
+            params.push(`%${search}%`);
+        }
+        
+        query += " ORDER BY created_at DESC";
+        
+        const result = await pool.query(query, params);
         res.json(result.rows);
     } catch (err) {
         console.error(err);
@@ -356,7 +422,6 @@ app.get('/api/quizzes/:id', verifyToken, async (req, res) => {
             return res.status(404).json({ message: "Quiz not found" });
         }
 
-        // Get questions, but OMIT the correct_option
         const questionsRes = await pool.query(
             "SELECT id, question_text, options FROM questions WHERE quiz_id = $1",
             [id]
@@ -376,17 +441,15 @@ app.get('/api/quizzes/:id', verifyToken, async (req, res) => {
 app.post('/api/submit/:id', verifyToken, async (req, res) => {
     const quizId = req.params.id;
     const userId = req.user.id;
-    const { answers } = req.body; // e.g., [{ questionId: 1, answerIndex: 0 }, ...]
+    const { answers } = req.body;
 
     try {
-        // 1. Get correct answers from DB
         const correctAnswersRes = await pool.query(
             "SELECT id, correct_option FROM questions WHERE quiz_id = $1",
             [quizId]
         );
         const correctAnswers = correctAnswersRes.rows;
 
-        // 2. Grade the submission
         let score = 0;
         const total = correctAnswers.length;
 
@@ -399,7 +462,6 @@ app.post('/api/submit/:id', verifyToken, async (req, res) => {
             }
         }
         
-        // 3. Save the score
         await pool.query(
             "INSERT INTO scores (user_id, quiz_id, score, total) VALUES ($1, $2, $3, $4)",
             [userId, quizId, score, total]
@@ -438,11 +500,8 @@ app.get('/api/scores', verifyToken, async (req, res) => {
     }
 });
 
-
 // --- START SERVER ---
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
     initializeDatabase();
 });
-
-

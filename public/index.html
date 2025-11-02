@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizForge AI - Smart Quiz Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="style.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'emerald': {
+                            DEFAULT: '#10b981',
+                            dark: '#059669',
+                            light: '#34d399',
+                        },
+                        'dark': {
+                            primary: '#0a0f1a',
+                            secondary: '#121826',
+                            tertiary: '#1a2332',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-dark-primary to-dark-secondary min-h-screen">
+    
+    <!-- Navbar -->
+    <nav class="bg-dark-secondary/80 backdrop-blur-lg border-b border-gray-700 shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-br from-emerald to-emerald-dark rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-xl gradient-text">QuizForge AI</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-gray-300 hover:text-emerald transition">Features</a>
+                    <a href="#how-it-works" class="text-gray-300 hover:text-emerald transition">How It Works</a>
+                    <a href="#about" class="text-gray-300 hover:text-emerald transition">About</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/login.html" class="text-emerald hover:text-emerald-light transition font-medium">
+                        Login
+                    </a>
+                    <a href="/register.html" class="bg-gradient-to-r from-emerald to-emerald-dark text-white px-5 py-2 rounded-lg font-medium hover:shadow-lg hover:shadow-emerald/50 transition">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <!-- Background decoration -->
+        <div class="absolute top-20 left-10 w-96 h-96 bg-emerald rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-emerald-dark rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse delay-700"></div>
+        
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center">
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6">
+                    <span class="text-white">Smart Quizzes</span><br/>
+                    <span class="gradient-text">Powered by AI</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-400 mb-10 max-w-3xl mx-auto">
+                    Create, take, and manage intelligent quizzes with the power of artificial intelligence. 
+                    Perfect for educators and learners.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/register.html" class="btn-emerald bg-gradient-to-r from-emerald to-emerald-dark text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-2xl hover:shadow-emerald/50 transition inline-flex items-center justify-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Start for Free
+                    </a>
+                    <a href="#features" class="bg-dark-secondary border border-gray-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:border-emerald hover:shadow-lg transition inline-flex items-center justify-center">
+                        Learn More
+                        <svg class="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
+                <div class="bg-dark-secondary border border-gray-700 rounded-2xl p-8 text-center hover:border-emerald transition">
+                    <div class="text-5xl font-bold gradient-text mb-2">AI</div>
+                    <div class="text-gray-400">Powered Generation</div>
+                </div>
+                <div class="bg-dark-secondary border border-gray-700 rounded-2xl p-8 text-center hover:border-emerald transition">
+                    <div class="text-5xl font-bold gradient-text mb-2">∞</div>
+                    <div class="text-gray-400">Unlimited Quizzes</div>
+                </div>
+                <div class="bg-dark-secondary border border-gray-700 rounded-2xl p-8 text-center hover:border-emerald transition">
+                    <div class="text-5xl font-bold gradient-text mb-2">24/7</div>
+                    <div class="text-gray-400">Always Available</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-4 sm:px-6 lg:px-8 relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Powerful Features</h2>
+                <p class="text-xl text-gray-400">Everything you need for modern quiz management</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-dark-secondary border border-gray-700 rounded-2xl p-8 hover:border-emerald transition group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald/20 to-emerald-dark/20 rounded-xl flex items-center justify-center mb-6 border border-emerald/30 group-hover:scale-110 transition">
+                        <svg class="w-8 h-8 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">AI-Generated Quizzes</h3>
+                    <p class="text-gray-400">Create comprehensive quizzes instantly using advanced AI technology.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-dark-secondary border border-gray-700 rounded-2xl p-8 hover:border-emerald transition group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald/20 to-emerald-dark/20 rounded-xl flex items-center justify-center mb-6 border border-emerald/30 group-hover:scale-110 transition">
+                        <svg class="w-8 h-8 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Smart Search</h3>
+                    <p class="text-gray-400">Find the perfect quiz with our intelligent search and filter system.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-dark-secondary border border-gray-700 rounded-2xl p-8 hover:border-emerald transition group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald/20 to-emerald-dark/20 rounded-xl flex items-center justify-center mb-6 border border-emerald/30 group-hover:scale-110 transition">
+                        <svg class="w-8 h-8 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Analytics Dashboard</h3>
+                    <p class="text-gray-400">Track performance with detailed analytics and insights.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-dark-secondary border border-gray-700 rounded-2xl p-8 hover:border-emerald transition group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald/20 to-emerald-dark/20 rounded-xl flex items-center justify-center mb-6 border border-emerald/30 group-hover:scale-110 transition">
+                        <svg class="w-8 h-8 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Student Management</h3>
+                    <p class="text-gray-400">Monitor student progress and quiz attempts in real-time.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-dark-secondary border border-gray-700 rounded-2xl p-8 hover:border-emerald transition group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald/20 to-emerald-dark/20 rounded-xl flex items-center justify-center mb-6 border border-emerald/30 group-hover:scale-110 transition">
+                        <svg class="w-8 h-8 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Secure & Reliable</h3>
+                    <p class="text-gray-400">Enterprise-grade security with reliable uptime guarantee.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-dark-secondary border border-gray-700 rounded-2xl p-8 hover:border-emerald transition group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald/20 to-emerald-dark/20 rounded-xl flex items-center justify-center mb-6 border border-emerald/30 group-hover:scale-110 transition">
+                        <svg class="w-8 h-8 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Instant Results</h3>
+                    <p class="text-gray-400">Get immediate feedback with automated grading system.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-20 px-4 sm:px-6 lg:px-8 bg-dark-secondary/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">How It Works</h2>
+                <p class="text-xl text-gray-400">Get started in three simple steps</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-emerald to-emerald-dark rounded-full flex items-center justify-center mx-auto mb-6 text-3xl font-bold text-white">
+                        1
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Sign Up</h3>
+                    <p class="text-gray-400">Create your free account as a student or admin in seconds.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-emerald to-emerald-dark rounded-full flex items-center justify-center mx-auto mb-6 text-3xl font-bold text-white">
+                        2
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Create or Take</h3>
+                    <p class="text-gray-400">Admins create AI-powered quizzes, students take and learn.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-emerald to-emerald-dark rounded-full flex items-center justify-center mx-auto mb-6 text-3xl font-bold text-white">
+                        3
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Track Progress</h3>
+                    <p class="text-gray-400">Monitor performance and improve with detailed analytics.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">About QuizForge AI</h2>
+            <p class="text-xl text-gray-400 mb-8">
+                QuizForge AI is a cutting-edge quiz platform that leverages artificial intelligence to revolutionize 
+                the way educators create and students take quizzes. Our mission is to make learning more engaging, 
+                efficient, and accessible for everyone.
+            </p>
+            <p class="text-lg text-gray-400">
+                Built with modern technologies and powered by advanced AI, we're transforming education one quiz at a time.
+            </p>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-emerald/10 to-emerald-dark/10 border-y border-emerald/20">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Get Started?</h2>
+            <p class="text-xl text-gray-400 mb-10">
+                Join thousands of educators and students using QuizForge AI today.
+            </p>
+            <a href="/register.html" class="btn-emerald bg-gradient-to-r from-emerald to-emerald-dark text-white px-10 py-4 rounded-lg font-semibold text-lg hover:shadow-2xl hover:shadow-emerald/50 transition inline-flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                Get Started for Free
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark-secondary border-t border-gray-700 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-emerald to-emerald-dark rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                        </div>
+                        <span class="font-bold text-xl gradient-text">QuizForge AI</span>
+                    </div>
+                    <p class="text-gray-400">
+                        Empowering education through intelligent quiz management.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#features" class="text-gray-400 hover:text-emerald transition">Features</a></li>
+                        <li><a href="#how-it-works" class="text-gray-400 hover:text-emerald transition">How It Works</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-emerald transition">About</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Account</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/login.html" class="text-gray-400 hover:text-emerald transition">Login</a></li>
+                        <li><a href="/register.html" class="text-gray-400 hover:text-emerald transition">Sign Up</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 QuizForge AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
