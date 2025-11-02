@@ -2,7 +2,7 @@
 const showMessage = (message, type = 'error') => {
     const messageBox = document.getElementById('message-box');
     messageBox.textContent = message;
-    messageBox.className = type; // 'error' or 'success'
+    messageBox.className = type;
     messageBox.classList.add('show');
 
     setTimeout(() => {
@@ -15,14 +15,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     const quizId = localStorage.getItem('currentQuizId');
 
-    // Auth check
     if (!token || !user || user.role !== 'student') {
         localStorage.clear();
         window.location.href = '/login.html';
         return;
     }
     
-    // Quiz ID check
     if (!quizId) {
         window.location.href = '/student.html';
         return;
@@ -50,24 +48,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Populate questions
         data.questions.forEach((q, index) => {
             const questionElement = document.createElement('div');
-            questionElement.className = 'question-block';
+            questionElement.className = 'question-block bg-dark-tertiary border border-gray-700 rounded-xl p-6 hover:border-emerald transition-all duration-300';
             questionElement.setAttribute('data-question-id', q.id);
 
             // Generate options HTML
             const optionsHTML = q.options.map((opt, optIndex) => `
                 <label for="q${q.id}-opt${optIndex}" 
-                       class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                       class="flex items-center p-4 border border-gray-700 rounded-lg cursor-pointer hover:bg-dark-secondary hover:border-emerald transition-all duration-300 group">
                     <input type="radio" id="q${q.id}-opt${optIndex}" name="question-${q.id}" value="${optIndex}" 
-                           class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300">
-                    <span class="ml-4 text-gray-700">${opt.text}</span>
+                           class="w-5 h-5 text-emerald border-gray-600 focus:ring-emerald focus:ring-offset-dark-tertiary">
+                    <span class="ml-4 text-gray-300 group-hover:text-white transition">${opt.text}</span>
                 </label>
             `).join('');
 
             questionElement.innerHTML = `
-                <p class="text-lg font-semibold text-gray-800 mb-4">
-                    ${index + 1}. ${q.question_text}
-                </p>
-                <div class="space-y-3">
+                <div class="flex items-start mb-4">
+                    <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-emerald/20 to-emerald-dark/20 rounded-lg flex items-center justify-center mr-3 border border-emerald/30">
+                        <span class="text-emerald font-bold text-sm">${index + 1}</span>
+                    </div>
+                    <p class="text-lg font-semibold text-white flex-1 pt-0.5">
+                        ${q.question_text}
+                    </p>
+                </div>
+                <div class="space-y-3 ml-11">
                     ${optionsHTML}
                 </div>
             `;
@@ -93,11 +96,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             answers.push({
                 questionId: questionId,
-                answerIndex: selectedOption ? parseInt(selectedOption.value) : null // Store null if unanswered
+                answerIndex: selectedOption ? parseInt(selectedOption.value) : null
             });
         });
         
-        // Check if all questions are answered
         if (answers.some(a => a.answerIndex === null)) {
             showMessage('Please answer all questions before submitting.', 'error');
             return;
@@ -123,7 +125,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('score-total').textContent = result.total;
             document.getElementById('results-modal').classList.remove('hidden');
             
-            // Clear the quiz ID so it can't be re-taken immediately
             localStorage.removeItem('currentQuizId');
 
         } catch (error) {

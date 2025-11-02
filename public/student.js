@@ -1,12 +1,12 @@
 // Utility to show messages
 const showMessage = (message, type = 'error') => {
     const messageBox = document.getElementById('message-box');
-    if (!messageBox) { // Message box might not exist on this page
+    if (!messageBox) {
         console.log(message);
         return;
     }
     messageBox.textContent = message;
-    messageBox.className = type; // 'error' or 'success'
+    messageBox.className = type;
     messageBox.classList.add('show');
 
     setTimeout(() => {
@@ -25,10 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Personalize
     document.getElementById('welcome-user').textContent = `Welcome, ${user.username}!`;
 
-    // Logout
     document.getElementById('logout-btn').addEventListener('click', () => {
         localStorage.clear();
         window.location.href = '/login.html';
@@ -52,26 +50,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             noQuizzes.classList.add('hidden');
-            quizList.innerHTML = ''; // Clear loading/default text
+            quizList.innerHTML = '';
 
             quizzes.forEach(quiz => {
                 const quizElement = document.createElement('div');
-                quizElement.className = 'flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200';
+                quizElement.className = 'flex items-center justify-between p-4 bg-dark-tertiary border border-gray-700 rounded-lg hover:border-emerald transition-all duration-300 hover:shadow-lg hover:shadow-emerald/10';
                 quizElement.innerHTML = `
-                    <span class="font-medium text-gray-700">${quiz.title}</span>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gradient-to-br from-emerald/20 to-emerald-dark/20 rounded-lg flex items-center justify-center mr-3 border border-emerald/30">
+                            <svg class="w-5 h-5 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="font-medium text-gray-200">${quiz.title}</span>
+                    </div>
                     <button data-id="${quiz.id}" 
-                            class="take-quiz-btn bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+                            class="take-quiz-btn bg-gradient-to-r from-emerald to-emerald-dark text-white px-5 py-2 rounded-lg text-sm font-medium hover:shadow-lg hover:shadow-emerald/50 transition-all duration-300 hover:-translate-y-0.5 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
                         Take Quiz
                     </button>
                 `;
                 quizList.appendChild(quizElement);
             });
 
-            // Add event listeners to "Take Quiz" buttons
             document.querySelectorAll('.take-quiz-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const quizId = e.target.getAttribute('data-id');
-                    // Store quiz ID and redirect to the quiz page
+                    const quizId = e.target.closest('button').getAttribute('data-id');
                     localStorage.setItem('currentQuizId', quizId);
                     window.location.href = '/quiz.html';
                 });
@@ -101,21 +107,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             noScores.classList.add('hidden');
-            scoreList.innerHTML = ''; // Clear loading/default text
+            scoreList.innerHTML = '';
 
             scores.forEach(score => {
                 const scoreElement = document.createElement('div');
-                scoreElement.className = 'p-4 bg-gray-50 rounded-lg border border-gray-200';
+                scoreElement.className = 'p-4 bg-dark-tertiary border border-gray-700 rounded-lg hover:border-emerald transition-all duration-300';
                 
                 const percentage = Math.round((score.score / score.total) * 100);
                 const date = new Date(score.taken_at).toLocaleDateString();
+                
+                let scoreColor = 'text-red-500';
+                let scoreBgColor = 'bg-red-500/10';
+                let scoreBorder = 'border-red-500/30';
+                
+                if (percentage >= 70) {
+                    scoreColor = 'text-emerald';
+                    scoreBgColor = 'bg-emerald/10';
+                    scoreBorder = 'border-emerald/30';
+                } else if (percentage >= 50) {
+                    scoreColor = 'text-yellow-500';
+                    scoreBgColor = 'bg-yellow-500/10';
+                    scoreBorder = 'border-yellow-500/30';
+                }
 
                 scoreElement.innerHTML = `
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="font-medium text-gray-800">${score.title}</span>
-                        <span class="font-bold text-lg ${percentage >= 70 ? 'text-green-600' : 'text-red-600'}">${percentage}%</span>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-medium text-gray-200 text-sm">${score.title}</span>
+                        <div class="${scoreBgColor} ${scoreBorder} border px-3 py-1 rounded-lg">
+                            <span class="font-bold text-lg ${scoreColor}">${percentage}%</span>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center text-sm text-gray-500">
+                    <div class="flex justify-between items-center text-xs text-gray-400">
                         <span>Score: ${score.score} / ${score.total}</span>
                         <span>${date}</span>
                     </div>
